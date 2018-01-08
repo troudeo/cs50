@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <errno.h>
+ 
+int main(void)
+{
+long long credit;
+
+// get credit card number from user within parameter
+do
+{
+    printf("credit card number: ");
+    credit = get_long_long(); 
+} while (credit < 4000000000000 || credit > 5599999999999999);
+
+// equation to check if credit card is valid (luhn algorithm)
+long long a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, form, form2, form3;
+
+a = credit % 10;
+b = (credit % 100 -a) /10;
+c = (credit % 1000 -b) /100;
+d = (credit % 10000 -c) /1000;
+e = (credit % 100000 -d) /10000;
+f = (credit % 1000000 -e) /100000;
+g = (credit % 10000000 -f) /1000000;
+h = (credit % 100000000 -g) /10000000;
+i = (credit % 1000000000 -h) /100000000;
+j = (credit % 10000000000 -i) /1000000000;
+k = (credit % 100000000000 -j) /10000000000;
+l = (credit % 1000000000000 -k) /100000000000;
+m = (credit % 10000000000000 -l) /1000000000000;
+n = (credit % 100000000000000 -m) /10000000000000;
+o = (credit % 1000000000000000 -n) /100000000000000;
+p = (credit % 10000000000000000 -o) /1000000000000000;
+
+form =  (a + c + e + g + i + k + m + o);
+long long b2, d2, f2, h2, j2, l2, n2, p2; 
+
+
+b2 = b*2;
+d2 = d*2;
+f2 = f*2;
+h2 = h*2;
+j2 = j*2;
+l2 = l*2;
+n2 = n*2;
+p2 = p*2;
+
+
+
+form2 = (b2/10 +b2%10) +(d2/10 +d2%10) +(f2/10 + f2%10) +(h2/10 +h2%10) +(j2/10 +j2%10) +(l2/10 +l2%10) +(n2/10+ n2%10) +(p2/10 +p2%10);
+
+
+ printf ("%lld\n", form);
+ printf ("%lld\n", form2);
+ 
+ 
+ form3 = form + form2;
+ 
+ //print the value of form3 to check if programme is running well
+ 
+ printf("%lld\n", form3);
+ 
+ //sorting the type of credit card depending on specific requirements
+ if (form3 % 10 == 0 && p==4)
+  
+ 
+ {
+     printf("credit card is valid, visa\n");
+ }
+ else if (form3 % 10 ==0 && n==0 && o==0 && p==0 && m==4)
+ {
+     printf("credit card is valid, visa\n");
+ }
+     
+ else if (form3 % 10 ==0 && p==0 && o==3 && (n==4 || n==7))
+   {
+       printf("credit card is valid, AMEX\n");
+   }
+   else if (form3 % 10 ==0 && p==5 && (o==1 || o==2 || o==3 || o==4 || o==5))
+   {
+       printf("credit card is vaild, MasterCard\n");
+   }
+   
+ else 
+   {
+       printf("credit card is invalid\n");
+   }
+    
+  
+}
