@@ -1,0 +1,93 @@
+
+       
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+typedef uint8_t  BYTE;
+
+int main(int argc, char *argv[])
+{
+    // ensure proper usage
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: ./recover image\n");
+        return 1;
+    }
+
+    // remember filenames
+    char *infile = argv[1];
+    BYTE buffer [512] = {0};
+
+    char jpgname[8];
+    
+    // open input file 
+    
+   FILE *inptr = fopen(argv[1], "r");
+    if (inptr == NULL)
+    {
+        fprintf(stderr, "Could not open %s.\n", infile);
+        return 2;
+    }
+    
+    int jpgcount = 0;
+    
+    int first = 0;
+      
+    
+    FILE *img =NULL;
+    
+     
+      while(fread(&buffer,512, 1, inptr)==1)
+      {
+     
+       // is the first block a jpg? 
+       if (buffer[0] == 0xff &&
+           buffer[1] == 0xd8 &&
+           buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
+          { 
+              //yes, is this the first image or does previos image file need to be closed?
+              if (jpgcount > 0)
+              {
+                fclose(img);
+                sprintf(jpgname, "%03i.jpg", jpgcount++);
+                fopen(jpgname, "w");
+                fwrite(buffer, 512, 1, img);
+                fread(buffer, 512, 1, inptr);
+              }
+             
+              if (jpgcount <= 0)
+               {   sprintf(jpgname, "%03i.jpg", jpgcount);
+               img = fopen(jpgname, "w");
+               fwrite(buffer, 512, 1, img);
+               first = 1;
+               fread(buffer, 512, 1, inptr);
+               jpgcount++;
+               }
+               
+          }
+
+           // the block is not start of jpg, is it part of a jpg or very beginning of file?
+        if(jpgcount > 0 && first ==1)
+           {
+               fwrite(buffer, 512, 1, img);
+           }
+               continue;
+          
+          }
+          // write the last block in case it is less than 512 bytes in size
+          int f = fread(&buffer,1, 512, inptr);
+          fwrite(buffer, 1, f, img);
+          fclose(img);
+             return(0);   
+     }               
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
